@@ -1,17 +1,19 @@
+using System.Numerics;
+
 namespace Lab1.Core.Models;
 
 public abstract class BaseNode
 {
-    public abstract double Calc(Func<string, double> refResolver);
+    public abstract BigInteger Calc(Func<string, BigInteger> refResolver);
 }
 
 public class NumNode : BaseNode
 {
-    public double Value { get; }
+    public BigInteger Value { get; }
 
-    public NumNode(double value) => Value = value;
+    public NumNode(BigInteger value) => Value = value;
 
-    public override double Calc(Func<string, double> refResolver) => Value;
+    public override BigInteger Calc(Func<string, BigInteger> refResolver) => Value;
 
     public override string ToString() => $"NumNode({Value})";
 }
@@ -27,7 +29,7 @@ public class UnaryOpNode : BaseNode
         Child = child;
     }
 
-    public override double Calc(Func<string, double> refResolver)
+    public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
         if (Operator == "+") return Child.Calc(refResolver);
         if (Operator == "-") return -Child.Calc(refResolver);
@@ -50,18 +52,18 @@ public class BinaryOpNode : BaseNode
         Right = right;
     }
 
-    public override double Calc(Func<string, double> refResolver)
+    public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
         if (Operator != "^")
             throw new CalcException($"Unknown binary operator: {Operator}");
 
-        double left = Left.Calc(refResolver);
-        double right = Right.Calc(refResolver);
-        if (left == 0 && right < 0)
-            throw new CalcException("Division by zero in '^'");
-        double result = Math.Pow(left, right);
-        if (double.IsInfinity(result) || double.IsNaN(result))
-            throw new CalcException("Overflow or undefined result in '^'");
+        BigInteger left = Left.Calc(refResolver);
+        BigInteger right = Right.Calc(refResolver);
+        if (right < 0)
+            throw new CalcException("Negative exponent");
+        if (right > 10000) 
+            throw new CalcException("Exponent must be less than 10000");
+        BigInteger result = BigInteger.Pow(left, (int)right);
         return result;
     }
 
@@ -79,21 +81,21 @@ public class FuncOpNode : BaseNode
         Args = args;
     }
 
-    public override double Calc(Func<string, double> refResolver)
+    public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
         if (Func == "min" || Func == "max")
         {
             if (Args.Length != 2)
                 throw new CalcException($"{Func} expects 2 arguments, got {Args.Length}");
-            double a = Args[0].Calc(refResolver);
-            double b = Args[1].Calc(refResolver);
-            return Func == "min" ? Math.Min(a, b) : Math.Max(a, b);
+            BigInteger a = Args[0].Calc(refResolver);
+            BigInteger b = Args[1].Calc(refResolver);
+            return Func == "min" ? BigInteger.Min(a, b) : BigInteger.Max(a, b);
         }
         if (Func == "inc" || Func == "dec")
         {
             if (Args.Length != 1)
                 throw new CalcException($"{Func} expects 1 argument, got {Args.Length}");
-            double v = Args[0].Calc(refResolver);
+            BigInteger v = Args[0].Calc(refResolver);
             return Func == "dec" ? v - 1 : v + 1;
         }
         throw new CalcException($"Unknown function: {Func}");
@@ -113,7 +115,7 @@ public class RefNode : BaseNode
         Position = position;
     } 
 
-    public override double Calc(Func<string, double> refResolver)
+    public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
         try
         {

@@ -123,11 +123,13 @@ public class FormulaParser
         return new FuncOpNode(func, parsedArgs);
     }
 
-    public static double ParseNumber(Token token)
+    public static BigInteger ParseNumber(Token token)
     {
-        BigInteger number = BigInteger.Parse(token.Value);
-        if (BigInteger(number))
-            throw new CalcException("Number is too large", token.Position);
+        if (!BigInteger.TryParse(token.Value, out BigInteger number))
+        {
+            throw new CalcException($"Invalid number format: '{token.Value}'", token.Position);
+        }
+
         return number;
     }
 
