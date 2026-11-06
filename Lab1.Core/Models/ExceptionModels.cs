@@ -13,3 +13,5 @@ public class ParsingException : Exception
     public ParsingException(string message, int? position = null) : base(message)
         => Position = position;
 }
+
+public class CellNotFoundException(string message) : Exception(message);
