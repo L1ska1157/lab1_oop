@@ -9,7 +9,7 @@ public abstract class BaseNode
 
 public class NumNode : BaseNode
 {
-    public BigInteger Value { get; }
+    private BigInteger Value { get; }
 
     public NumNode(BigInteger value) => Value = value;
 
@@ -20,8 +20,8 @@ public class NumNode : BaseNode
 
 public class UnaryOpNode : BaseNode
 {
-    public string Operator { get; }
-    public BaseNode Child { get; }
+    private string Operator { get; }
+    private BaseNode Child { get; }
 
     public UnaryOpNode(string op, BaseNode child)
     {
@@ -41,9 +41,9 @@ public class UnaryOpNode : BaseNode
 
 public class BinaryOpNode : BaseNode
 {
-    public string Operator { get; }
-    public BaseNode Left { get; }
-    public BaseNode Right { get; }
+    private string Operator { get; }
+    private BaseNode Left { get; }
+    private BaseNode Right { get; }
 
     public BinaryOpNode(string op, BaseNode left, BaseNode right)
     {
@@ -72,8 +72,8 @@ public class BinaryOpNode : BaseNode
 
 public class FuncOpNode : BaseNode
 {
-    public string Func { get; }
-    public BaseNode[] Args { get; }
+    private string Func { get; }
+    private BaseNode[] Args { get; }
 
     public FuncOpNode(string func, params BaseNode[] args)
     {
@@ -83,7 +83,7 @@ public class FuncOpNode : BaseNode
 
     public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
-        if (Func == "min" || Func == "max")
+        if (Func is "min" or "max")
         {
             if (Args.Length != 2)
                 throw new CalcException($"{Func} expects 2 arguments, got {Args.Length}");
@@ -91,7 +91,7 @@ public class FuncOpNode : BaseNode
             BigInteger b = Args[1].Calc(refResolver);
             return Func == "min" ? BigInteger.Min(a, b) : BigInteger.Max(a, b);
         }
-        if (Func == "inc" || Func == "dec")
+        if (Func is "inc" or "dec")
         {
             if (Args.Length != 1)
                 throw new CalcException($"{Func} expects 1 argument, got {Args.Length}");
@@ -106,27 +106,27 @@ public class FuncOpNode : BaseNode
 
 public class RefNode : BaseNode
 {
-    public string Address { get; }
-    public int Position { get; }
+    private readonly string _address;
+    private readonly int _position;
 
     public RefNode(string address, int position)
     {
-        Address = address;
-        Position = position;
+        _address = address;
+        _position = position;
     } 
 
     public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
         try
         {
-            return refResolver(Address);
+            return refResolver(_address);
         }
         catch (CalcException ex)
         {
-            throw new CalcException(ex.Message, Position);
+            throw new CalcException(ex.Message, _position);
         }
     }
 
-    public override string ToString() => $"RefNode({Address})";
+    public override string ToString() => $"RefNode({_address})";
     
 }
