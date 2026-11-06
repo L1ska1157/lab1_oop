@@ -8,7 +8,6 @@ public class Cell
     public string Value { get; private set; }
     public BaseNode? ExpTree { get; private set; }
     public CellType? Type { get; private set; }
-    public bool IsVisited;
 
     public Cell()
     {
@@ -62,9 +61,9 @@ public class Cell
 
 public class Table
 {
-    public List<List<Cell>>  Cells { get; private set; }
-    public int Rows { get; private set; }
-    public int Cols { get; private set; }
+    private List<List<Cell>>  Cells { get; set; }
+    private int Rows { get; set; }
+    private int Cols { get; set; }
     public string? Filepath { get; private set; }
     public bool IsSaved { get; set; }
     
@@ -90,7 +89,7 @@ public class Table
     public void DeleteRow(int row)
     {
         int rowIndex = row - 1;
-        if (rowIndex >= Rows && rowIndex < 0) throw new CellNotFoundException($"Row with position {row} doesn't exists");;
+        if (rowIndex >= Rows || rowIndex < 0) throw new CellNotFoundException($"Row with position {row} doesn't exists");;
 
         Cells.RemoveAt(rowIndex);
         Rows -= 1;
@@ -121,6 +120,20 @@ public class Table
         ) throw new CellNotFoundException($"Cell with position {col}-{row} doesn't exists");
         
         return Cells[rowIndex][colIndex];
+    }
+
+    public void AddRow()
+    {
+        Cells.Add(new List<Cell>(Rows));
+        Rows += 1;
+    }
+
+    public void AddCol()
+    {
+        foreach (List<Cell> row in Cells)
+        {
+            row.Add(new Cell());
+        }
     }
 
     public Cell GetCellByAddress(string address)
