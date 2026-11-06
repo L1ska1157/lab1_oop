@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using Lab1.Core.Models;
@@ -7,11 +6,11 @@ namespace Lab1.Core;
 
 public static class FormulaParser
 {
-    private static readonly HashSet<string> Funcs = new() { "inc", "dec", "max", "min" };
+    private static readonly HashSet<string> Funcs = ["inc", "dec", "max", "min"];
 
     public static BaseNode Parse(string exp)
     {
-        if (exp.StartsWith("=")) exp = exp.Substring(1);
+        if (exp.StartsWith('=')) exp = exp[1..];
         List<Token> tokens = ParseToTokens(exp);
         return ParseTree(tokens);
     }
@@ -120,13 +119,18 @@ public static class FormulaParser
             args.Add(currentArg);
 
         string func = funcToken.Value;
-        if ((func == "inc" || func == "dec") && args.Count != 1)
-            throw new ParsingException($"{func} expects 1 argument, got {args.Count}", funcToken.Position);
-        if ((func == "min" || func == "max") && args.Count != 2)
-            throw new ParsingException($"{func} expects 2 arguments, got {args.Count}", funcToken.Position);
-
-        var parsedArgs = args.Select(a => ParseTree(a)).ToArray();
-        return new FuncOpNode(func, parsedArgs);
+        switch (func)
+        {
+            case "inc" or "dec" when args.Count != 1:
+                throw new ParsingException($"{func} expects 1 argument, got {args.Count}", funcToken.Position);
+            case "min" or "max" when args.Count != 2:
+                throw new ParsingException($"{func} expects 2 arguments, got {args.Count}", funcToken.Position);
+            default:
+            {
+                var parsedArgs = args.Select(ParseTree).ToArray();
+                return new FuncOpNode(func, parsedArgs);
+            }
+        }
     }
 
     private static BigInteger ParseNumber(Token token)
@@ -164,7 +168,7 @@ public static class FormulaParser
             var token = tokens[position];
 
             bool isOperandStart = token.Type is TokenType.Num or TokenType.LParen
-                                  or TokenType.PlusMinus or TokenType.Func;
+                                  or TokenType.PlusMinus or TokenType.Func or TokenType.Ref;
 
             if (expectOperand && !isOperandStart)
                 throw new ParsingException($"Expected operand, got {token.Value}", token.Position);
@@ -215,13 +219,15 @@ public static class FormulaParser
                 throw new ParsingException($"Trailing tokens after function {topOp.Value}", tokens[parenEnd + 1].Position);
             return ParseFunc(topOp, tokens.GetRange(parenStart + 1, parenEnd - parenStart - 1));
         }
-        else if (topOp is { Type: TokenType.PlusMinus })
+        
+        if (topOp is { Type: TokenType.PlusMinus })
         {
             if (topOpPosition != 0)
                 throw new ParsingException($"Unexpected token before unary {topOp.Value}", topOp.Position);
             return new UnaryOpNode(topOp.Value, ParseTree(tokens.GetRange(1, tokens.Count - 1)));
         }
-        else if (topOp is { Type: TokenType.Power })
+        
+        if (topOp is { Type: TokenType.Power })
         {
             var left = tokens.GetRange(0, topOpPosition);
             var right = tokens.GetRange(topOpPosition + 1, tokens.Count - topOpPosition - 1);
@@ -229,10 +235,10 @@ public static class FormulaParser
                 throw new ParsingException("Missing operand for '^'", topOp.Position);
             return new BinaryOpNode("^", ParseTree(left), ParseTree(right));
         }
-        else if (tokens[0].Type == TokenType.LParen && SkipParens(tokens, 0) == tokens.Count - 1)
+        
+        if (tokens[0].Type == TokenType.LParen && SkipParens(tokens, 0) == tokens.Count - 1)
             return ParseTree(tokens.GetRange(1, tokens.Count - 2));
 
-        else
-            throw new ParsingException("Unexpected sequence of tokens", tokens[0].Position);
+        throw new ParsingException("Unexpected sequence of tokens", tokens[0].Position);
     }
 }

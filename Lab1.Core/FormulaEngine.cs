@@ -1,14 +1,17 @@
-using System.Globalization;
 using System.Numerics;
-using System.Text.RegularExpressions;
 using Lab1.Core.Models;
 
 namespace Lab1.Core;
 
-public class FormulaEngine(Table table)
+public class FormulaEngine()
 {
-    private Table _table = table;
-    private HashSet<string> _visited = new HashSet<string>();
+    private readonly HashSet<string> _visited = [];
+    private readonly Table _table;
+
+    public FormulaEngine(Table table) : this()
+    {
+        _table = table;
+    }
 
     public CalcRes Calculate(BaseNode expTree)
     {
@@ -54,8 +57,6 @@ public class FormulaEngine(Table table)
                 if (BigInteger.TryParse(referencedCell.Value, out BigInteger value)) return value;
                 throw new CalcException("Can't parse referenced cell");
             }
-
-            ;
 
             if (referencedCell.Type == CellType.Exp)
             {
