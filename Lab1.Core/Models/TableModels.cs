@@ -5,55 +5,46 @@ namespace Lab1.Core.Models;
 public class Cell
 {
     public string? Exp { get; private set; }
-    public string Value { get; private set; }
+    public string Value { get; private set; } = "";
     public BaseNode? ExpTree { get; private set; }
-    public CellType? Type { get; private set; }
-
-    public Cell()
-    {
-        Exp = null;
-        Value = "";
-        ExpTree = null;
-        Type = null;
-        IsVisited = false;
-    }
+    public CellType Type { get; private set; } = CellType.Empty;
 
     public void SetExpression(string exp)
     {
         exp = exp.Trim();
-        Exp = exp;
+        Exp = exp.Length == 0 ? null : exp;
+        ExpTree = null;
+
         if (exp.Length == 0)
         {
-            Exp = null;
             Value = "";
-            ExpTree = null;
-            Type = null;
+            Type = CellType.Empty;
         }
-        else if (exp.StartsWith("="))
+        else if (exp[0] == '=')
         {
             try
             {
-                ExpTree = FormulaParser.Parse(exp.Substring(1));
+                ExpTree = FormulaParser.Parse(exp[1..]);
                 Type = CellType.Exp;
                 Value = "";
             }
             catch (ParsingException e)
             {
                 Type = CellType.Error;
-                ExpTree = null;
-                Value = $"Syntax error at {e.Position}\n{e.Message}";
+                Value = e.Position is int p
+                    ? $"Syntax error at {p + 2}\n{e.Message}"
+                    : $"Syntax error\n{e.Message}";
             }
         }
-        else if (BigInteger.TryParse(exp, out BigInteger val))
+        else if (BigInteger.TryParse(exp, NumberStyles.AllowLeadingSign,
+                     CultureInfo.InvariantCulture, out BigInteger val))
         {
-            Value = val.ToString();
-            ExpTree = null;
+            Value = val.ToString(CultureInfo.InvariantCulture);
             Type = CellType.Num;
         }
         else
         {
             Value = exp;
-            ExpTree = null;
             Type = CellType.Str;
         }
     }
@@ -61,51 +52,47 @@ public class Cell
 
 public class Table
 {
-    private List<List<Cell>>  Cells { get; set; }
-    private int Rows { get; set; }
-    private int Cols { get; set; }
-    public string? Filepath { get; private set; }
-    public bool IsSaved { get; set; }
-    
-    
-    public Table()
+    private List<List<Cell>> Cells { get; } = [];
+    public int Rows { get; private set; }
+    public int Cols { get; private set; }
+
+    public Table(int rows = 10, int cols = 10)
     {
-        Rows = 10;
-        Cols = 10;
-        Cells = new List<List<Cell>>(Rows);
-        for (int r=0; r < Rows; r++)
-        {
-            List<Cell> row = new List<Cell>(Cols);
-            for (int c = 0; c < Cols; c++)
-            {
-                row.Add(new Cell());
-            }
-            Cells.Add(row);
-        }
-        Filepath = null;
-        IsSaved = false;
+        if (rows < 1 || cols < 1) throw new ArgumentOutOfRangeException();
+        Cols = cols;
+        for (int r = 0; r < rows; r++) AddRow();
+    }
+
+    public void AddRow()
+    {
+        var row = new List<Cell>(Cols);
+        for (int c = 0; c < Cols; c++) row.Add(new Cell());
+        Cells.Add(row);
+        Rows++;
+    }
+
+    public void AddCol()
+    {
+        foreach (var row in Cells) row.Add(new Cell());
+        Cols++;
     }
 
     public void DeleteRow(int row)
     {
-        int rowIndex = row - 1;
-        if (rowIndex >= Rows || rowIndex < 0) throw new CellNotFoundException($"Row with position {row} doesn't exists");;
-
-        Cells.RemoveAt(rowIndex);
-        Rows -= 1;
+        int i = row - 1;
+        if (i < 0 || i >= Rows) throw new CellNotFoundException($"Row {row} doesn't exist");
+        if (Rows == 1) throw new InvalidOperationException("Table must have at least one row");
+        Cells.RemoveAt(i);
+        Rows--;
     }
 
     public void DeleteCol(int col)
     {
-        int colIndex = col - 1;
-        if (colIndex >= Cols || colIndex < 0) throw new CellNotFoundException($"Col with position {col} doesn't exists");;
-
-        foreach (List<Cell> row in Cells)
-        {
-            row.RemoveAt(colIndex);
-        }
-
-        Cols -= 1;
+        int i = col - 1;
+        if (i < 0 || i >= Cols) throw new CellNotFoundException($"Column {col} doesn't exist");
+        if (Cols == 1) throw new InvalidOperationException("Table must have at least one column");
+        foreach (var row in Cells) row.RemoveAt(i);
+        Cols--;
     }
 
     public Cell GetCellByRowCol(int row, int col)
@@ -117,60 +104,25 @@ public class Table
             rowIndex < 0 ||
             colIndex >= Cols ||
             colIndex < 0
-        ) throw new CellNotFoundException($"Cell with position {col}-{row} doesn't exists");
+        ) throw new CellNotFoundException($"Cell at row {row}, column {col} doesn't exist");
         
         return Cells[rowIndex][colIndex];
-    }
-
-    public void AddRow()
-    {
-        Cells.Add(new List<Cell>(Rows));
-        Rows += 1;
-    }
-
-    public void AddCol()
-    {
-        foreach (List<Cell> row in Cells)
-        {
-            row.Add(new Cell());
-        }
     }
 
     public Cell GetCellByAddress(string address)
     {
         int i = 0;
-        while (i < address.Length && char.IsLetter(address[i]))
-        {
-            i++;
-        }
-
+        while (i < address.Length && char.IsAsciiLetter(address[i])) i++;
         string letters = address[..i];
-        string numbers = address[i..];
-        
-        if (string.IsNullOrEmpty(letters) || string.IsNullOrEmpty(numbers))
-        {
-            throw new CellNotFoundException($"Cell with address '{address}' doesn't exist");
-        }
 
-        if (!int.TryParse(numbers, out int row))
-        {
-            throw new CellNotFoundException($"Invalid row number in address '{address}'");
-        }
+        if (letters.Length is 0 or > 3 ||
+            !int.TryParse(address[i..], NumberStyles.None, CultureInfo.InvariantCulture, out int row))
+            throw new CellNotFoundException($"Cell with address '{address}' doesn't exist");
 
         int col = 0;
-
-        foreach (char ch in letters.ToUpper())
-        {
+        foreach (char ch in letters.ToUpperInvariant())
             col = col * 26 + (ch - 'A' + 1);
-        }
 
-        try
-        {
-            return GetCellByRowCol(row, col);
-        }
-        catch (CellNotFoundException)
-        {
-            throw new CellNotFoundException($"Cell with address {address} doesn't exists");
-        }
+        return GetCellByRowCol(row, col);
     }
 }

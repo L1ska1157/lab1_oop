@@ -3,15 +3,9 @@ using Lab1.Core.Models;
 
 namespace Lab1.Core;
 
-public class FormulaEngine()
+public class FormulaEngine(Table table)
 {
     private readonly HashSet<string> _visited = [];
-    private readonly Table _table;
-
-    public FormulaEngine(Table table) : this()
-    {
-        _table = table;
-    }
 
     public CalcRes Calculate(BaseNode expTree)
     {
@@ -35,7 +29,7 @@ public class FormulaEngine()
             Cell referencedCell;
             try
             {
-                referencedCell = _table.GetCellByAddress(address);
+                referencedCell = table.GetCellByAddress(address);
             }
             catch (CellNotFoundException)
             {

@@ -10,7 +10,6 @@ public static class FormulaParser
 
     public static BaseNode Parse(string exp)
     {
-        if (exp.StartsWith('=')) exp = exp[1..];
         List<Token> tokens = ParseToTokens(exp);
         return ParseTree(tokens);
     }
