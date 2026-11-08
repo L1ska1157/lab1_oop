@@ -16,6 +16,7 @@
             <Switch IsToggled="{Binding IsExpressionMode}" />
             <Button Text="Зберегти" Command="{Binding SaveCommand}" />
             <Button Text="Відкрити" Command="{Binding LoadCommand}" />
+            <Button Text="Вийти" Command="{Binding ExitCommand}" />
         </HorizontalStackLayout>
 
         <!-- Рядок 1: поле вводу -->

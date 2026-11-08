@@ -15,6 +15,11 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool _isExpressionMode = true;
     [ObservableProperty] private string _editorText = "";
     [ObservableProperty] private CellViewModel? _selectedCell;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    private bool _hasUnsavedChanges;
+
+    private bool CanSave() => HasUnsavedChanges;
 
     public ObservableCollection<RowViewModel> Rows { get; } = [];
     public ObservableCollection<string> ColumnHeaders { get; } = [];
@@ -45,8 +50,13 @@ public partial class MainViewModel : ObservableObject
     private void Commit()
     {
         if (SelectedCell == null || !IsExpressionMode) return;
-        SelectedCell.Apply(EditorText);
+
+        string exp = EditorText.Trim();
+        if (exp == SelectedCell.Exp) return;   // нічого не змінилось, не вважаємо це змінами
+
+        SelectedCell.Apply(exp);
         SelectedCell.Refresh();
+        HasUnsavedChanges = true;
     }
 
     [RelayCommand]
@@ -54,6 +64,7 @@ public partial class MainViewModel : ObservableObject
     {
         _table.AddRow();
         Rebuild();
+        HasUnsavedChanges = true;
     }
 
     [RelayCommand]
@@ -61,6 +72,7 @@ public partial class MainViewModel : ObservableObject
     {
         _table.AddCol();
         Rebuild();
+        HasUnsavedChanges = true;
     }
 
     private void OnCellSelected(CellViewModel cell) => SelectedCell = cell;
@@ -112,34 +124,57 @@ public partial class MainViewModel : ObservableObject
         return name;
     }
     
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
     {
         using var stream = new MemoryStream();
         TableFileManager.Save(_table, stream);
         stream.Position = 0;
         var result = await FileSaver.Default.SaveAsync("table.json", stream);
-        if (!result.IsSuccessful)
+
+        if (result.IsSuccessful)
+            HasUnsavedChanges = false;
+        else
             await Shell.Current.DisplayAlert("Помилка", "Не вдалося зберегти файл", "OK");
     }
 
     [RelayCommand]
-    [Obsolete("Obsolete")]
     private async Task LoadAsync()
     {
+        if (HasUnsavedChanges)
+        {
+            bool proceed = await Shell.Current.DisplayAlert(
+                "Незбережені зміни",
+                "Поточна таблиця має незбережені зміни. Завантажити іншу таблицю без збереження?",
+                "Завантажити", "Скасувати");
+            if (!proceed) return;
+        }
+
         var file = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = "Виберіть файл таблиці" });
         if (file == null) return;
 
         try
         {
-            await using var stream = await file.OpenReadAsync();
-            _table = TableFileManager.Load(stream);   // присвоєння лише після успішного читання
+            using var stream = await file.OpenReadAsync();
+            _table = TableFileManager.Load(stream);
             _engine = new FormulaEngine(_table);
-            Rebuild();                                // скидає вибір і, у режимі ЗНАЧЕННЯ, перераховує
+            Rebuild();
+            HasUnsavedChanges = false;
         }
         catch (TableFileException e)
         {
             await Shell.Current.DisplayAlert("Помилка", e.Message, "OK");
         }
+    }
+    
+    [RelayCommand]
+    private async Task ExitAsync()
+    {
+        string message = HasUnsavedChanges
+            ? "Є незбережені зміни, вони будуть втрачені. Ви точно хочете вийти?"
+            : "Ви точно хочете вийти?";
+
+        bool exit = await Shell.Current.DisplayAlert("Вихід", message, "Вийти", "Скасувати");
+        if (exit) Application.Current?.Quit();
     }
 }
