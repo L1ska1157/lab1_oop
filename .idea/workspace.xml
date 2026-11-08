@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f1299e87-8173-4786-8eaa-0c6412d7e47d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Lab1.Core/FormulaEngine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lab1.Core/FormulaEngine.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lab1.Core/Lab1.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Lab1.Core/Lab1.Core.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lab1.Core/Models/Models.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lab1.Core/Models/Models.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lab1.Core/Models/TableModels.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Lab1.Core/Models/TableModels.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lab1/Lab1.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Lab1/Lab1.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Lab1/MainPage.xaml" beforeDir="false" afterPath="$PROJECT_DIR$/Lab1/MainPage.xaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "L1ska1157"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/L1ska1157/lab1_oop",
+    "accountId": "fe1da3ad-50cc-4d30-a2f5-5cbc519f2dca"
+  }
+}]]></component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/FormulaEngine.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/FormulaParser.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/Models/Enums.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/Models/ExceptionModels.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/Models/Models.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/Models/NodeModels.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/Models/TableModels.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/Models/TokenModels.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/ViewModels/CellViewModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1.Core/tests.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Lab1/ViewModels/RowViewModel.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.000000002124838" />
+      <entry key="MS500" value="1.0189327651138287" />
+      <entry key="S2" value="1.5451622498737771" />
+      <entry key="S5" value="2.3740058809812234" />
+      <entry key="S10" value="2.988118228320094" />
+      <entry key="S30" value="3.605545519519641" />
+      <entry key="S60" value="3.8481736324854547" />
+      <entry key="M2" value="4.132160103530635" />
+      <entry key="M5" value="4.92872063587103" />
+      <entry key="M10" value="7.323498195550175" />
+      <entry key="M15" value="9.649767261372558" />
+      <entry key="M30" value="13.955567967406697" />
+      <entry key="H1" value="17.350975041874516" />
+      <entry key="H2" value="19.49280293063984" />
+      <entry key="H4" value="20.697006766278108" />
+      <entry key="D1" value="21.7756330185413" />
+      <entry key="W1" value="21.967766585414093" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="2.7043927468753146E-225" />
+      <entry key="M5" value="1.4887710153674018E-90" />
+      <entry key="M10" value="1.2201520460038581E-45" />
+      <entry key="M15" value="1.1418506453042145E-30" />
+      <entry key="M30" value="1.0685741178337672E-15" />
+      <entry key="H1" value="3.2689051956790784E-8" />
+      <entry key="H2" value="1.8080113925744706E-4" />
+      <entry key="H4" value="0.013446231414691888" />
+      <entry key="D1" value="0.4876408694059604" />
+      <entry key="W1" value="0.9024909820102617" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.9330329935193514" />
+      <entry key="MS500" value="1.0049041255310285" />
+      <entry key="S2" value="1.539746108028285" />
+      <entry key="S5" value="2.370587182363246" />
+      <entry key="S10" value="2.985933171182494" />
+      <entry key="S30" value="3.604655619273149" />
+      <entry key="S60" value="3.8476952001301474" />
+      <entry key="M2" value="4.131899027950533" />
+      <entry key="M5" value="4.928516293748436" />
+      <entry key="M10" value="7.323116132076712" />
+      <entry key="M15" value="9.649310761419391" />
+      <entry key="M30" value="13.955144228805757" />
+      <entry key="H1" value="17.350683980371702" />
+      <entry key="H2" value="19.49281284347075" />
+      <entry key="H4" value="20.710359154837736" />
+      <entry key="D1" value="22.26324978331911" />
+      <entry key="W1" value="22.870253172754598" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6,
+  "fromUser": false
+}]]></component>
+  <component name="ProjectId" id="3Lk69RBPtMUGbZ1kfZyIz2gaKUp" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "cidr.known.project.marker": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "master",
+    "nodejs_package_manager_path": "npm"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f1299e87-8173-4786-8eaa-0c6412d7e47d" name="Changes" comment="" />
+      <created>1793985567634</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1793985567634</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Refactor" />
+    <MESSAGE value="added using System.Globalization;" />
+    <option name="LAST_COMMIT_MESSAGE" value="added using System.Globalization;" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

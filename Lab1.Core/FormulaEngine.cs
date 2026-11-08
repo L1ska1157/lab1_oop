@@ -42,7 +42,7 @@ public class FormulaEngine(Table table)
                 throw new CalcException("Error in reference");
             }
 
-            if (referencedCell.Type is CellType.Str or null)
+            if (referencedCell.Type is CellType.Str or CellType.Empty)
             {
                 throw new CalcException("Wrong data in reference");
             }
