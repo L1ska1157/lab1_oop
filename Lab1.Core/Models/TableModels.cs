@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Globalization;
 
@@ -31,6 +32,7 @@ public class Cell
             }
             catch (ParsingException e)
             {
+                Debug.WriteLine($"[parse] '{exp}' -> {e.Message} (pos {e.Position})");
                 Type = CellType.Error;
                 Value = e.Position is int p
                     ? $"Syntax error at {p + 2}\n{e.Message}"

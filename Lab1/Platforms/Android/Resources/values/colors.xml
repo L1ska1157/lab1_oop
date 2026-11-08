@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#512BD4</color>
-    <color name="colorPrimaryDark">#2B0B98</color>
-    <color name="colorAccent">#2B0B98</color>
+    <Color x:Key="Primary">#E0665A</Color>
+    <Color x:Key="PrimaryDark">#E0665A</Color>
+    <Color x:Key="PrimaryDarkText">#FFFFFF</Color>
+    <Color x:Key="Tertiary">#8F3A32</Color>
+    <Color x:Key="SecondaryDarkText">#E0665A</Color>
+    <Color x:Key="OffBlack">#0F0F0F</Color>
+    <Color x:Key="Gray500">#555555</Color>
 </resources>

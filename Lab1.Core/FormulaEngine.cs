@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using Lab1.Core.Models;
 using System.Globalization;
@@ -11,12 +12,16 @@ public class FormulaEngine(Table table)
     public CalcRes Calculate(BaseNode expTree)
     {
         _visited.Clear();
+        Debug.WriteLine($"[calc] tree: {expTree}");
         try
         {
-            return CalcRes.Ok(expTree.Calc(RefResolver));
+            var result = expTree.Calc(RefResolver);
+            Debug.WriteLine($"[calc] result: {result}");
+            return CalcRes.Ok(result);
         }
         catch (CalcException e)
         {
+            Debug.WriteLine($"[calc] error: {e.Message} (pos {e.Position})");
             return CalcRes.Fail(e.Message, e.Position);
         }
     }

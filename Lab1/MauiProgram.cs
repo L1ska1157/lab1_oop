@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Lab1.ViewModels;
 
 namespace Lab1;
 
@@ -19,6 +20,8 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
+        builder.Services.AddSingleton<MainViewModel>();
+        builder.Services.AddSingleton<MainPage>();
         return builder.Build();
     }
 }
