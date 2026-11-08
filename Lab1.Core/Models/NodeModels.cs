@@ -33,7 +33,7 @@ public class UnaryOpNode : BaseNode
     {
         if (Operator == "+") return Child.Calc(refResolver);
         if (Operator == "-") return -Child.Calc(refResolver);
-        throw new CalcException($"Unknown unary operator: {Operator}");
+        throw new CalcException($"Невідомий унарний оператор: {Operator}");
     }
 
     public override string ToString() => $"UnaryOpNode({Operator}, {Child})";
@@ -55,14 +55,14 @@ public class BinaryOpNode : BaseNode
     public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
         if (Operator != "^")
-            throw new CalcException($"Unknown binary operator: {Operator}");
+            throw new CalcException($"Невідомий бінарний оператор: {Operator}");
 
         BigInteger left = Left.Calc(refResolver);
         BigInteger right = Right.Calc(refResolver);
         if (right < 0)
-            throw new CalcException("Negative exponent");
+            throw new CalcException("Відʼємний показник степені");
         if (right > 10000) 
-            throw new CalcException("Exponent must be less than 10000");
+            throw new CalcException("Показник степені не більше 10000");
         BigInteger result = BigInteger.Pow(left, (int)right);
         return result;
     }
@@ -86,7 +86,7 @@ public class FuncOpNode : BaseNode
         if (Func is "min" or "max")
         {
             if (Args.Length != 2)
-                throw new CalcException($"{Func} expects 2 arguments, got {Args.Length}");
+                throw new CalcException($"{Func} очікувала 2 аргументи, отримала {Args.Length}");
             BigInteger a = Args[0].Calc(refResolver);
             BigInteger b = Args[1].Calc(refResolver);
             return Func == "min" ? BigInteger.Min(a, b) : BigInteger.Max(a, b);
@@ -94,11 +94,11 @@ public class FuncOpNode : BaseNode
         if (Func is "inc" or "dec")
         {
             if (Args.Length != 1)
-                throw new CalcException($"{Func} expects 1 argument, got {Args.Length}");
+                throw new CalcException($"{Func} очікувала 1 аргумент, отримала {Args.Length}");
             BigInteger v = Args[0].Calc(refResolver);
             return Func == "dec" ? v - 1 : v + 1;
         }
-        throw new CalcException($"Unknown function: {Func}");
+        throw new CalcException($"Невідома функція: {Func}");
     }
 
     public override string ToString() => $"FuncOpNode({Func}, [{string.Join(", ", Args.Select(a => a.ToString()))}])";

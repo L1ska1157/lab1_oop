@@ -34,9 +34,9 @@ public class Cell
             {
                 Debug.WriteLine($"[parse] '{exp}' -> {e.Message} (pos {e.Position})");
                 Type = CellType.Error;
-                Value = e.Position is int p
-                    ? $"Syntax error at {p + 2}\n{e.Message}"
-                    : $"Syntax error\n{e.Message}";
+                Value = e.Position is int p ?
+                    $"{p + 2}: {e.Message}"
+                    : $"{e.Message}";
             }
         }
         else if (BigInteger.TryParse(exp, NumberStyles.AllowLeadingSign,
@@ -83,8 +83,8 @@ public class Table
     public void DeleteRow(int row)
     {
         int i = row - 1;
-        if (i < 0 || i >= Rows) throw new CellNotFoundException($"Row {row} doesn't exist");
-        if (Rows == 1) throw new InvalidOperationException("Table must have at least one row");
+        if (i < 0 || i >= Rows) throw new CellNotFoundException($"Рядок {row} не існує");
+        if (Rows == 1) throw new InvalidOperationException("У таблиці має бути хоча б 1 рядок");
         Cells.RemoveAt(i);
         Rows--;
     }
@@ -92,8 +92,8 @@ public class Table
     public void DeleteCol(int col)
     {
         int i = col - 1;
-        if (i < 0 || i >= Cols) throw new CellNotFoundException($"Column {col} doesn't exist");
-        if (Cols == 1) throw new InvalidOperationException("Table must have at least one column");
+        if (i < 0 || i >= Cols) throw new CellNotFoundException($"Колонка {col} не існує");
+        if (Cols == 1) throw new InvalidOperationException("У таблиці має бути хоча б 1 колонка");
         foreach (var row in Cells) row.RemoveAt(i);
         Cols--;
     }
@@ -107,7 +107,7 @@ public class Table
             rowIndex < 0 ||
             colIndex >= Cols ||
             colIndex < 0
-        ) throw new CellNotFoundException($"Cell at row {row}, column {col} doesn't exist");
+        ) throw new CellNotFoundException($"Клітинки на рядку {row}, колонці {col} не існує");
         
         return Cells[rowIndex][colIndex];
     }
@@ -120,7 +120,7 @@ public class Table
 
         if (letters.Length is 0 or > 3 ||
             !int.TryParse(address[i..], NumberStyles.None, CultureInfo.InvariantCulture, out int row))
-            throw new CellNotFoundException($"Cell with address '{address}' doesn't exist");
+            throw new CellNotFoundException($"Клітинки за адресою '{address}' не існує");
 
         int col = 0;
         foreach (char ch in letters.ToUpperInvariant())

@@ -8,10 +8,15 @@ namespace Lab1.ViewModels;
 
 public partial class CellViewModel(
     Cell cell,
+    int row,
+    int col,
     FormulaEngine engine,
     Func<bool> isExpressionMode,
     Action<CellViewModel> onSelected) : ObservableObject
 {
+    public int Row { get; } = row;
+    public int Col { get; } = col;
+    
     private string _value = "";
 
     // Що показувати в клітинці: вираз або порахований результат
@@ -33,7 +38,11 @@ public partial class CellViewModel(
         }
 
         var res = engine.Calculate(cell.ExpTree!);
-        _value = res.IsSuccess ? res.Result.ToString() : $"Помилка обчислень\n{res.ErrorMessage}";
+        _value = res.IsSuccess
+            ? res.Result.ToString()
+            : res.ErrorPos is int p
+                ? $"{p + 2}: {res.ErrorMessage}"
+                : res.ErrorMessage!;
     }
 
     // Сказати екрану: перечитай Text

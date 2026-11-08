@@ -42,8 +42,10 @@ public static class FormulaParser
                     tokens.Add(new Token(TokenType.Func, word.ToLower(), start));
                 else if (Regex.IsMatch(word, @"^[A-Za-z]+\d+$"))
                     tokens.Add(new Token(TokenType.Ref, word.ToUpper(), start));
+                else if (!Regex.IsMatch(word, @"^[A-Za-z0-9]+$"))
+                    throw new ParsingException($"Недопустимі символи в '{word}'", start);
                 else
-                    throw new ParsingException($"Unknown function '{word}'", start);
+                    throw new ParsingException($"Невідома функція '{word}'", start);
                 continue;
             }
 
@@ -58,7 +60,7 @@ public static class FormulaParser
             };
 
             if (type == null)
-                throw new ParsingException($"Can't process symbol '{c}'", i);
+                throw new ParsingException($"Невідомий символ '{c}'", i);
 
             tokens.Add(new Token(type.Value, c.ToString(), i));
             i++;
@@ -69,7 +71,7 @@ public static class FormulaParser
     private static int SkipParens(List<Token> tokens, int position)
     {
         if (tokens[position].Type != TokenType.LParen)
-            throw new ParsingException("Expected '('", tokens[position].Position);
+            throw new ParsingException("Очікувалася )", tokens[position].Position);
 
         int depth = 1;
         while (position < tokens.Count - 1)
@@ -84,7 +86,7 @@ public static class FormulaParser
                     return position;
             }
         }
-        throw new ParsingException("Unclosed parenthesis", tokens[position].Position);
+        throw new ParsingException("Незакриті дужки", tokens[position].Position);
     }
 
     private static BaseNode ParseFunc(Token funcToken, List<Token> tokens)
@@ -121,9 +123,9 @@ public static class FormulaParser
         switch (func)
         {
             case "inc" or "dec" when args.Count != 1:
-                throw new ParsingException($"{func} expects 1 argument, got {args.Count}", funcToken.Position);
+                throw new ParsingException($"В {func} передано {args.Count} аргументів замість 1", funcToken.Position);
             case "min" or "max" when args.Count != 2:
-                throw new ParsingException($"{func} expects 2 arguments, got {args.Count}", funcToken.Position);
+                throw new ParsingException($"В {func} передано {args.Count} аргументів замість 2", funcToken.Position);
             default:
             {
                 var parsedArgs = args.Select(ParseTree).ToArray();
@@ -136,7 +138,7 @@ public static class FormulaParser
     {
         if (!BigInteger.TryParse(token.Value, out BigInteger number))
         {
-            throw new ParsingException($"Invalid number format: '{token.Value}'", token.Position);
+            throw new ParsingException($"Неправильний формат числа: '{token.Value}'", token.Position);
         }
 
         return number;
@@ -145,7 +147,7 @@ public static class FormulaParser
     private static BaseNode ParseTree(List<Token> tokens)
     {
         if (tokens.Count == 0)
-            throw new ParsingException("Empty expression or argument");
+            throw new ParsingException("Відсутній вираз або аргумент");
 
         if (tokens.Count == 1)
         {
@@ -153,7 +155,7 @@ public static class FormulaParser
                 return new NumNode(ParseNumber(tokens[0]));
             if (tokens[0].Type == TokenType.Ref)
                 return new RefNode(tokens[0].Value, tokens[0].Position);
-            throw new ParsingException($"Invalid token/number: {tokens[0].Value}", tokens[0].Position);
+            throw new ParsingException($"Неправильний токен або число: {tokens[0].Value}", tokens[0].Position);
         }
 
         int position = 0;
@@ -170,9 +172,9 @@ public static class FormulaParser
                                   or TokenType.PlusMinus or TokenType.Func or TokenType.Ref;
 
             if (expectOperand && !isOperandStart)
-                throw new ParsingException($"Expected operand, got {token.Value}", token.Position);
+                throw new ParsingException($"Очікувався операнд, отримано {token.Value}", token.Position);
             if (!expectOperand && isOperandStart)
-                throw new ParsingException($"Expected operator, got {token.Value}", token.Position);
+                throw new ParsingException($"Очікувався оператор, отримано {token.Value}", token.Position);
 
             // Бінарний степінь ^ (корінь дерева; перший ^ дає праву асоціативність)
             if (token.Type == TokenType.Power && opPriority < 3)
@@ -195,7 +197,7 @@ public static class FormulaParser
                 topOpPosition = position;
                 opPriority = 1;
                 if (position + 1 >= tokens.Count || tokens[position + 1].Type != TokenType.LParen)
-                    throw new ParsingException($"Expected '(' after function {token.Value}", token.Position);
+                    throw new ParsingException($"Очікувалася '(' після функції {token.Value}", token.Position);
             }
             // Пропуск блоків у дужках
             else if (token.Type == TokenType.LParen)
@@ -215,14 +217,14 @@ public static class FormulaParser
             int parenStart = topOpPosition + 1;
             int parenEnd = SkipParens(tokens, parenStart);
             if (parenEnd != tokens.Count - 1)
-                throw new ParsingException($"Trailing tokens after function {topOp.Value}", tokens[parenEnd + 1].Position);
+                throw new ParsingException($"Зайві токени після функції {topOp.Value}", tokens[parenEnd + 1].Position);
             return ParseFunc(topOp, tokens.GetRange(parenStart + 1, parenEnd - parenStart - 1));
         }
         
         if (topOp is { Type: TokenType.PlusMinus })
         {
             if (topOpPosition != 0)
-                throw new ParsingException($"Unexpected token before unary {topOp.Value}", topOp.Position);
+                throw new ParsingException($"Неочікувані токени перед унарним {topOp.Value}", topOp.Position);
             return new UnaryOpNode(topOp.Value, ParseTree(tokens.GetRange(1, tokens.Count - 1)));
         }
         
@@ -231,13 +233,13 @@ public static class FormulaParser
             var left = tokens.GetRange(0, topOpPosition);
             var right = tokens.GetRange(topOpPosition + 1, tokens.Count - topOpPosition - 1);
             if (left.Count == 0 || right.Count == 0)
-                throw new ParsingException("Missing operand for '^'", topOp.Position);
+                throw new ParsingException("Відсутній операнд для '^'", topOp.Position);
             return new BinaryOpNode("^", ParseTree(left), ParseTree(right));
         }
         
         if (tokens[0].Type == TokenType.LParen && SkipParens(tokens, 0) == tokens.Count - 1)
             return ParseTree(tokens.GetRange(1, tokens.Count - 2));
 
-        throw new ParsingException("Unexpected sequence of tokens", tokens[0].Position);
+        throw new ParsingException("Неочікувана послідовність токенів", tokens[0].Position);
     }
 }

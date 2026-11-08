@@ -14,10 +14,16 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private bool _isExpressionMode = true;
     [ObservableProperty] private string _editorText = "";
-    [ObservableProperty] private CellViewModel? _selectedCell;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(DeleteRowCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteColCommand))]
+    private CellViewModel? _selectedCell;
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private bool _hasUnsavedChanges;
+
+    private bool CanDeleteRow() => SelectedCell != null && _table.Rows > 1;
+    private bool CanDeleteCol() => SelectedCell != null && _table.Cols > 1;
 
     private bool CanSave() => HasUnsavedChanges;
 
@@ -74,6 +80,24 @@ public partial class MainViewModel : ObservableObject
         Rebuild();
         HasUnsavedChanges = true;
     }
+    
+    [RelayCommand(CanExecute = nameof(CanDeleteRow))]
+    private void DeleteRow()
+    {
+        int row = SelectedCell!.Row;
+        _table.DeleteRow(row);
+        Rebuild();
+        HasUnsavedChanges = true;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanDeleteCol))]
+    private void DeleteCol()
+    {
+        int col = SelectedCell!.Col;
+        _table.DeleteCol(col);
+        Rebuild();
+        HasUnsavedChanges = true;
+    }
 
     private void OnCellSelected(CellViewModel cell) => SelectedCell = cell;
 
@@ -87,7 +111,7 @@ public partial class MainViewModel : ObservableObject
         {
             int row = r;
             var cells = Enumerable.Range(1, _table.Cols).Select(c =>
-                new CellViewModel(_table.GetCellByRowCol(row, c), _engine, () => IsExpressionMode, OnCellSelected));
+                new CellViewModel(_table.GetCellByRowCol(row, c), row, c, _engine, () => IsExpressionMode, OnCellSelected));
             Rows.Add(new RowViewModel(row, cells));
         }
 
@@ -95,6 +119,8 @@ public partial class MainViewModel : ObservableObject
         for (int c = 1; c <= _table.Cols; c++) ColumnHeaders.Add(ColumnName(c));
 
         if (!IsExpressionMode) RecalculateAll();
+        
+        System.Diagnostics.Debug.WriteLine($"[rebuild] table {_table.Rows}x{_table.Cols}, Rows.Count={Rows.Count}");
     }
 
     private void RecalculateAll()
@@ -139,6 +165,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
+    [Obsolete("Obsolete")]
     private async Task LoadAsync()
     {
         if (HasUnsavedChanges)

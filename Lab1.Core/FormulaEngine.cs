@@ -28,7 +28,7 @@ public class FormulaEngine(Table table)
 
     private BigInteger RefResolver(string address)
     {
-        if (!_visited.Add(address)) throw new CalcException("Cycled refs");
+        if (!_visited.Add(address)) throw new CalcException("Зациклені посилання");
 
         try
         {
@@ -39,29 +39,29 @@ public class FormulaEngine(Table table)
             }
             catch (CellNotFoundException)
             {
-                throw new CalcException("Reference not found");
+                throw new CalcException("Посилання не знайдено");
             }
 
             if (referencedCell.Type == CellType.Error)
             {
-                throw new CalcException("Error in reference");
+                throw new CalcException("Помилка в обчисленні посилання");
             }
 
             if (referencedCell.Type is CellType.Str or CellType.Empty)
             {
-                throw new CalcException("Wrong data in reference");
+                throw new CalcException("Неправильні дані в посиланні");
             }
 
             if (referencedCell.Type == CellType.Num)
             {
                 if (BigInteger.TryParse(referencedCell.Value, out BigInteger value)) return value;
-                throw new CalcException("Can't parse referenced cell");
+                throw new CalcException("Неможливо прочитати посилання");
             }
 
             if (referencedCell.Type == CellType.Exp)
             {
                 if (referencedCell.ExpTree == null)
-                    throw new CalcException("Empty expression tree");
+                    throw new CalcException("Пусте дерево виразу");
                 return referencedCell.ExpTree.Calc(RefResolver);
             }
         }

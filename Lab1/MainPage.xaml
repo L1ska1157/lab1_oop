@@ -5,11 +5,17 @@
              x:Class="Lab1.MainPage"
              x:DataType="vm:MainViewModel"
              Title="Електронні таблиці">
+    <ContentPage.Resources>
+        <x:Double x:Key="CellWidth">220</x:Double>
+        <x:Double x:Key="CellHeight">70</x:Double>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="10" RowSpacing="8">
 
         <!-- Рядок 0: кнопки та режим -->
         <HorizontalStackLayout Grid.Row="0" Spacing="10">
+            <Button Text="Видалити рядок" Command="{Binding DeleteRowCommand}" />
+            <Button Text="Видалити стовпчик" Command="{Binding DeleteColCommand}" />
             <Button Text="Додати рядок" Command="{Binding AddRowCommand}" />
             <Button Text="Додати стовпчик" Command="{Binding AddColCommand}" />
             <Label Text="Режим виразів:" VerticalOptions="Center" />
@@ -40,7 +46,7 @@
                     <HorizontalStackLayout BindableLayout.ItemsSource="{Binding ColumnHeaders}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="x:String">
-                                <Label Text="{Binding .}" WidthRequest="140"
+                                <Label Text="{Binding .}" WidthRequest="{StaticResource CellWidth}"
                                        HorizontalTextAlignment="Center" />
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
@@ -58,7 +64,7 @@
                                 <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Cells}">
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate x:DataType="vm:CellViewModel">
-                                            <Border WidthRequest="140" HeightRequest="50">
+                                            <Border WidthRequest="{StaticResource CellWidth}" HeightRequest="{StaticResource CellHeight}">
                                                 <Border.Triggers>
                                                     <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
                                                         <Setter Property="BackgroundColor"
@@ -66,7 +72,9 @@
                                                     </DataTrigger>
                                                 </Border.Triggers>
                                                 <Label Text="{Binding Text}"
-                                                       FontSize="16"
+                                                       FontSize="14"
+                                                       MaxLines="3"
+                                                       LineBreakMode="TailTruncation"
                                                        VerticalTextAlignment="Center"
                                                        Padding="6,0">
                                                     <Label.GestureRecognizers>
