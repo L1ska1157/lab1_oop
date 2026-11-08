@@ -14,6 +14,8 @@
             <Button Text="Додати стовпчик" Command="{Binding AddColCommand}" />
             <Label Text="Режим виразів:" VerticalOptions="Center" />
             <Switch IsToggled="{Binding IsExpressionMode}" />
+            <Button Text="Зберегти" Command="{Binding SaveCommand}" />
+            <Button Text="Відкрити" Command="{Binding LoadCommand}" />
         </HorizontalStackLayout>
 
         <!-- Рядок 1: поле вводу -->

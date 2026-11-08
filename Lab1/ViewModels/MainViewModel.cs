@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.Input;
 using Lab1.Core;
 using Lab1.Core.Models;
@@ -8,8 +9,8 @@ namespace Lab1.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    private readonly Table _table = new(10, 10);
-    private readonly FormulaEngine _engine;
+    private Table _table = new(10, 10);
+    private FormulaEngine _engine;
 
     [ObservableProperty] private bool _isExpressionMode = true;
     [ObservableProperty] private string _editorText = "";
@@ -109,5 +110,36 @@ public partial class MainViewModel : ObservableObject
             col /= 26;
         }
         return name;
+    }
+    
+    [RelayCommand]
+    private async Task SaveAsync()
+    {
+        using var stream = new MemoryStream();
+        TableFileManager.Save(_table, stream);
+        stream.Position = 0;
+        var result = await FileSaver.Default.SaveAsync("table.json", stream);
+        if (!result.IsSuccessful)
+            await Shell.Current.DisplayAlert("Помилка", "Не вдалося зберегти файл", "OK");
+    }
+
+    [RelayCommand]
+    [Obsolete("Obsolete")]
+    private async Task LoadAsync()
+    {
+        var file = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = "Виберіть файл таблиці" });
+        if (file == null) return;
+
+        try
+        {
+            await using var stream = await file.OpenReadAsync();
+            _table = TableFileManager.Load(stream);   // присвоєння лише після успішного читання
+            _engine = new FormulaEngine(_table);
+            Rebuild();                                // скидає вибір і, у режимі ЗНАЧЕННЯ, перераховує
+        }
+        catch (TableFileException e)
+        {
+            await Shell.Current.DisplayAlert("Помилка", e.Message, "OK");
+        }
     }
 }

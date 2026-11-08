@@ -15,3 +15,5 @@ public class ParsingException : Exception
 }
 
 public class CellNotFoundException(string message) : Exception(message);
+
+public class TableFileException(string message) : Exception(message);
