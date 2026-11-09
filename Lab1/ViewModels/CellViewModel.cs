@@ -41,7 +41,7 @@ public partial class CellViewModel(
         _value = res.IsSuccess
             ? res.Result.ToString()
             : res.ErrorPos is int p
-                ? $"{p + 2}: {res.ErrorMessage}"
+                ? $"{p + 1}: {res.ErrorMessage}"
                 : res.ErrorMessage!;
     }
 

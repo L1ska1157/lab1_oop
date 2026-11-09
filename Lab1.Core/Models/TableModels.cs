@@ -26,7 +26,7 @@ public class Cell
         {
             try
             {
-                ExpTree = FormulaParser.Parse(exp[1..]);
+                ExpTree = FormulaParser.Parse(exp);
                 Type = CellType.Exp;
                 Value = "";
             }
@@ -35,7 +35,7 @@ public class Cell
                 Debug.WriteLine($"[parse] '{exp}' -> {e.Message} (pos {e.Position})");
                 Type = CellType.Error;
                 Value = e.Position is int p ?
-                    $"{p + 2}: {e.Message}"
+                    $"{p + 1}: {e.Message}"
                     : $"{e.Message}";
             }
         }

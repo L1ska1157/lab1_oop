@@ -204,4 +204,7 @@ public partial class MainViewModel : ObservableObject
         bool exit = await Shell.Current.DisplayAlert("Вихід", message, "Вийти", "Скасувати");
         if (exit) Application.Current?.Quit();
     }
+    
+    [RelayCommand]
+    private async Task ShowHelpAsync() => await Shell.Current.GoToAsync(nameof(HelpPage));
 }

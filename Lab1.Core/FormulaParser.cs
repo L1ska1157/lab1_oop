@@ -17,7 +17,7 @@ public static class FormulaParser
     private static List<Token> ParseToTokens(string exp)
     {
         var tokens = new List<Token>();
-        int i = 0;
+        int i = 1;
         while (i < exp.Length)
         {
             char c = exp[i];
@@ -147,7 +147,7 @@ public static class FormulaParser
     private static BaseNode ParseTree(List<Token> tokens)
     {
         if (tokens.Count == 0)
-            throw new ParsingException("Відсутній вираз або аргумент");
+            throw new ParsingException("Відсутній вираз або аргумент",  tokens[0].Position);
 
         if (tokens.Count == 1)
         {
