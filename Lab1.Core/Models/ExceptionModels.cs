@@ -1,10 +1,8 @@
 namespace Lab1.Core.Models;
 
-public class CalcException : Exception
+public class CalcException(string message, int? position = null) : Exception(message)
 {
-    public int? Position { get; }
-    public CalcException(string message, int? position = null) : base(message)
-        => Position = position;
+    public int? Position { get; } = position;
 }
 
 public class ParsingException : Exception 

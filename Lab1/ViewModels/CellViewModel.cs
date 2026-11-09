@@ -37,12 +37,14 @@ public partial class CellViewModel(
             return;
         }
 
-        var res = engine.Calculate(cell.ExpTree!);
-        _value = res.IsSuccess
-            ? res.Result.ToString()
-            : res.ErrorPos is int p
-                ? $"{p + 1}: {res.ErrorMessage}"
-                : res.ErrorMessage!;
+        try
+        {
+            _value = engine.Calculate(cell.ExpTree!).ToString();
+        }
+        catch (CalcException e)
+        {
+            _value = e.Position is int p ? $"{p + 1}: {e.Message}" : e.Message;
+        }
     }
 
     // Сказати екрану: перечитай Text

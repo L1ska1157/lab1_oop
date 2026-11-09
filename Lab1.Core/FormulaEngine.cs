@@ -9,21 +9,10 @@ public class FormulaEngine(Table table)
 {
     private readonly HashSet<string> _visited = [];
 
-    public CalcRes Calculate(BaseNode expTree)
+    public BigInteger Calculate(BaseNode expTree)
     {
         _visited.Clear();
-        Debug.WriteLine($"[calc] tree: {expTree}");
-        try
-        {
-            var result = expTree.Calc(RefResolver);
-            Debug.WriteLine($"[calc] result: {result}");
-            return CalcRes.Ok(result);
-        }
-        catch (CalcException e)
-        {
-            Debug.WriteLine($"[calc] error: {e.Message} (pos {e.Position})");
-            return CalcRes.Fail(e.Message, e.Position);
-        }
+        return expTree.Calc(RefResolver);
     }
 
     private BigInteger RefResolver(string address)
