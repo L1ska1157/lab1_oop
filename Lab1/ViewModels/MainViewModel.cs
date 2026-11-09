@@ -9,7 +9,11 @@ namespace Lab1.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    private Table _table = new(10, 10);
+    private const int DefaultRows = 10;
+    private const int DefaultCols = 10;
+
+    private Table _table = new(DefaultRows, DefaultCols);   // замість new(10, 10)
+    
     private FormulaEngine _engine;
 
     [ObservableProperty] private bool _isExpressionMode = true;
@@ -150,7 +154,27 @@ public partial class MainViewModel : ObservableObject
         return name;
     }
     
+    [RelayCommand]
+    [Obsolete("Obsolete")]
+    private async Task NewTableAsync()
+    {
+        if (HasUnsavedChanges)
+        {
+            bool proceed = await Shell.Current.DisplayAlert(
+                "Незбережені зміни",
+                "Поточна таблиця має незбережені зміни. Створити нову без збереження?",
+                "Створити", "Скасувати");
+            if (!proceed) return;
+        }
+
+        _table = new Table(DefaultRows, DefaultRows);
+        _engine = new FormulaEngine(_table);
+        Rebuild();
+        HasUnsavedChanges = false;
+    }
+    
     [RelayCommand(CanExecute = nameof(CanSave))]
+    [Obsolete("Obsolete")]
     private async Task SaveAsync()
     {
         using var stream = new MemoryStream();
@@ -195,6 +219,7 @@ public partial class MainViewModel : ObservableObject
     }
     
     [RelayCommand]
+    [Obsolete("Obsolete")]
     private async Task ExitAsync()
     {
         string message = HasUnsavedChanges

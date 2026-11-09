@@ -22,8 +22,10 @@
                 <Button Text="Видалити стовпчик" Command="{Binding DeleteColCommand}" />
                 <Button Text="Додати рядок" Command="{Binding AddRowCommand}" />
                 <Button Text="Додати стовпчик" Command="{Binding AddColCommand}" />
-                <Label Text="Редагування:" VerticalOptions="Center" />
-                <Switch IsToggled="{Binding IsExpressionMode}" />
+                <Label Text="Значення" VerticalOptions="Center" />
+                <Switch IsToggled="{Binding IsExpressionMode}" VerticalOptions="Center" />
+                <Label Text="Вираз" VerticalOptions="Center" />
+                <Button Text="Створити нову" Command="{Binding NewTableCommand}" />
                 <Button Text="Зберегти" Command="{Binding SaveCommand}" />
                 <Button Text="Відкрити" Command="{Binding LoadCommand}" />
             </HorizontalStackLayout>

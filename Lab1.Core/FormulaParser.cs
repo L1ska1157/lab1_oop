@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using Lab1.Core.Models;
@@ -144,11 +145,13 @@ public static class FormulaParser
         return number;
     }
 
-    private static BaseNode ParseTree(List<Token> tokens)
+    private static BaseNode ParseTree(List<Token> tokens, int prevTokenPosition = 0)
     {
         if (tokens.Count == 0)
-            throw new ParsingException("Відсутній вираз або аргумент",  tokens[0].Position);
-
+        {
+            throw new ParsingException("Відсутній вираз або аргумент",  prevTokenPosition);
+        }
+            
         if (tokens.Count == 1)
         {
             if (tokens[0].Type == TokenType.Num)
@@ -225,7 +228,7 @@ public static class FormulaParser
         {
             if (topOpPosition != 0)
                 throw new ParsingException($"Неочікувані токени перед унарним {topOp.Value}", topOp.Position);
-            return new UnaryOpNode(topOp.Value, ParseTree(tokens.GetRange(1, tokens.Count - 1)));
+            return new UnaryOpNode(topOp.Value, ParseTree(tokens.GetRange(1, tokens.Count - 1), topOpPosition));
         }
         
         if (topOp is { Type: TokenType.Power })
@@ -234,11 +237,11 @@ public static class FormulaParser
             var right = tokens.GetRange(topOpPosition + 1, tokens.Count - topOpPosition - 1);
             if (left.Count == 0 || right.Count == 0)
                 throw new ParsingException("Відсутній операнд для '^'", topOp.Position);
-            return new BinaryOpNode("^", ParseTree(left), ParseTree(right));
+            return new BinaryOpNode("^", ParseTree(left, topOpPosition), ParseTree(right, topOpPosition));
         }
         
         if (tokens[0].Type == TokenType.LParen && SkipParens(tokens, 0) == tokens.Count - 1)
-            return ParseTree(tokens.GetRange(1, tokens.Count - 2));
+            return ParseTree(tokens.GetRange(1, tokens.Count - 2), topOpPosition);
 
         throw new ParsingException("Неочікувана послідовність токенів", tokens[0].Position);
     }
