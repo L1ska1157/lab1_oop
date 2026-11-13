@@ -71,6 +71,8 @@ public static class FormulaParser
 
     private static int SkipParens(List<Token> tokens, int position)
     {
+        int start = position;
+        
         if (tokens[position].Type != TokenType.LParen)
             throw new ParsingException("Очікувалася (", tokens[position].Position);
 
@@ -87,7 +89,7 @@ public static class FormulaParser
                     return position;
             }
         }
-        throw new ParsingException("Незакриті дужки", tokens[position].Position);
+        throw new ParsingException("Незакриті дужки", tokens[start].Position);
     }
 
     private static BaseNode ParseFunc(Token funcToken, List<Token> tokens)
@@ -129,7 +131,7 @@ public static class FormulaParser
                 throw new ParsingException($"В {func} передано {args.Count} аргументів замість 2", funcToken.Position);
             default:
             {
-                var parsedArgs = args.Select(ParseTree).ToArray();
+                var parsedArgs = args.Select(a => ParseTree(a, funcToken.Position)).ToArray();;
                 return new FuncOpNode(func, parsedArgs);
             }
         }
@@ -228,7 +230,7 @@ public static class FormulaParser
         {
             if (topOpPosition != 0)
                 throw new ParsingException($"Неочікувані токени перед унарним {topOp.Value}", topOp.Position);
-            return new UnaryOpNode(topOp.Value, ParseTree(tokens.GetRange(1, tokens.Count - 1), topOpPosition));
+            return new UnaryOpNode(topOp.Value, ParseTree(tokens.GetRange(1, tokens.Count - 1), topOp.Position));
         }
         
         if (topOp is { Type: TokenType.Power })
@@ -237,11 +239,11 @@ public static class FormulaParser
             var right = tokens.GetRange(topOpPosition + 1, tokens.Count - topOpPosition - 1);
             if (left.Count == 0 || right.Count == 0)
                 throw new ParsingException("Відсутній операнд для '^'", topOp.Position);
-            return new BinaryOpNode("^", ParseTree(left, topOpPosition), ParseTree(right, topOpPosition));
+            return new BinaryOpNode("^", ParseTree(left, topOp.Position), ParseTree(right, topOp.Position));
         }
         
         if (tokens[0].Type == TokenType.LParen && SkipParens(tokens, 0) == tokens.Count - 1)
-            return ParseTree(tokens.GetRange(1, tokens.Count - 2), topOpPosition);
+            return ParseTree(tokens.GetRange(1, tokens.Count - 2), tokens[0].Position);
 
         throw new ParsingException("Неочікувана послідовність токенів", tokens[0].Position);
     }
