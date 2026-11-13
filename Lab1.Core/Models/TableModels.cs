@@ -119,11 +119,11 @@ public class Table
         string letters = address[..i];
 
         if (letters.Length is 0 or > 3 ||
-            !int.TryParse(address[i..], NumberStyles.None, CultureInfo.InvariantCulture, out int row))
+            !int.TryParse(address[i..], out int row))
             throw new CellNotFoundException($"Клітинки за адресою '{address}' не існує");
 
         int col = 0;
-        foreach (char ch in letters.ToUpperInvariant())
+        foreach (char ch in letters.ToUpper())
             col = col * 26 + (ch - 'A' + 1);
 
         return GetCellByRowCol(row, col);

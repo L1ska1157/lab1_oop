@@ -7,7 +7,7 @@ namespace Lab1.Core;
 
 public class FormulaEngine(Table table)
 {
-    private readonly HashSet<string> _visited = [];
+    private HashSet<string> _visited = [];
 
     public BigInteger Calculate(BaseNode expTree)
     {
@@ -44,7 +44,7 @@ public class FormulaEngine(Table table)
             if (referencedCell.Type == CellType.Num)
             {
                 if (BigInteger.TryParse(referencedCell.Value, out BigInteger value)) return value;
-                throw new CalcException("Неможливо прочитати посилання");
+                throw new CalcException("Неможливо прочитати значення за посиланням");
             }
 
             if (referencedCell.Type == CellType.Exp)

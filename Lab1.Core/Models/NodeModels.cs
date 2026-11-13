@@ -7,27 +7,19 @@ public abstract class BaseNode
     public abstract BigInteger Calc(Func<string, BigInteger> refResolver);
 }
 
-public class NumNode : BaseNode
+public class NumNode(BigInteger value) : BaseNode
 {
-    private BigInteger Value { get; }
-
-    public NumNode(BigInteger value) => Value = value;
+    private BigInteger Value { get; } = value;
 
     public override BigInteger Calc(Func<string, BigInteger> refResolver) => Value;
 
     public override string ToString() => $"NumNode({Value})";
 }
 
-public class UnaryOpNode : BaseNode
+public class UnaryOpNode(string op, BaseNode child) : BaseNode
 {
-    private string Operator { get; }
-    private BaseNode Child { get; }
-
-    public UnaryOpNode(string op, BaseNode child)
-    {
-        Operator = op;
-        Child = child;
-    }
+    private string Operator { get; } = op;
+    private BaseNode Child { get; } = child;
 
     public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
@@ -39,18 +31,11 @@ public class UnaryOpNode : BaseNode
     public override string ToString() => $"UnaryOpNode({Operator}, {Child})";
 }
 
-public class BinaryOpNode : BaseNode
+public class BinaryOpNode(string op, BaseNode left, BaseNode right) : BaseNode
 {
-    private string Operator { get; }
-    private BaseNode Left { get; }
-    private BaseNode Right { get; }
-
-    public BinaryOpNode(string op, BaseNode left, BaseNode right)
-    {
-        Operator = op;
-        Left = left;
-        Right = right;
-    }
+    private string Operator { get; } = op;
+    private BaseNode Left { get; } = left;
+    private BaseNode Right { get; } = right;
 
     public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
@@ -70,16 +55,10 @@ public class BinaryOpNode : BaseNode
     public override string ToString() => $"BinaryOpNode({Operator}, {Left}, {Right})";
 }
 
-public class FuncOpNode : BaseNode
+public class FuncOpNode(string func, params BaseNode[] args) : BaseNode
 {
-    private string Func { get; }
-    private BaseNode[] Args { get; }
-
-    public FuncOpNode(string func, params BaseNode[] args)
-    {
-        Func = func;
-        Args = args;
-    }
+    private string Func { get; } = func;
+    private BaseNode[] Args { get; } = args;
 
     public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
@@ -104,29 +83,20 @@ public class FuncOpNode : BaseNode
     public override string ToString() => $"FuncOpNode({Func}, [{string.Join(", ", Args.Select(a => a.ToString()))}])";
 }
 
-public class RefNode : BaseNode
+public class RefNode(string address, int position) : BaseNode
 {
-    private readonly string _address;
-    private readonly int _position;
-
-    public RefNode(string address, int position)
-    {
-        _address = address;
-        _position = position;
-    } 
-
     public override BigInteger Calc(Func<string, BigInteger> refResolver)
     {
         try
         {
-            return refResolver(_address);
+            return refResolver(address);
         }
-        catch (CalcException ex)
+        catch (CalcException e)
         {
-            throw new CalcException(ex.Message, _position);
+            throw new CalcException(e.Message, position);
         }
     }
 
-    public override string ToString() => $"RefNode({_address})";
+    public override string ToString() => $"RefNode({address})";
     
 }

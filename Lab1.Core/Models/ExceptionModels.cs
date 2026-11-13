@@ -5,11 +5,9 @@ public class CalcException(string message, int? position = null) : Exception(mes
     public int? Position { get; } = position;
 }
 
-public class ParsingException : Exception 
+public class ParsingException(string message, int? position = null) : Exception(message)
 {
-    public int? Position { get; }
-    public ParsingException(string message, int? position = null) : base(message)
-        => Position = position;
+    public int? Position { get; } = position;
 }
 
 public class CellNotFoundException(string message) : Exception(message);

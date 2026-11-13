@@ -12,12 +12,16 @@ public partial class MainViewModel : ObservableObject
     private const int DefaultRows = 10;
     private const int DefaultCols = 10;
 
-    private Table _table = new(DefaultRows, DefaultCols);   // замість new(10, 10)
+    private Table _table = new(DefaultRows, DefaultCols);
     
     private FormulaEngine _engine;
-
-    [ObservableProperty] private bool _isExpressionMode = true;
     [ObservableProperty] private string _editorText = "";
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AddRowCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddColCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteRowCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteColCommand))]
+    private bool _isExpressionMode = true;
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(DeleteRowCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteColCommand))]
@@ -26,8 +30,10 @@ public partial class MainViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private bool _hasUnsavedChanges;
 
-    private bool CanDeleteRow() => SelectedCell != null && _table.Rows > 1;
-    private bool CanDeleteCol() => SelectedCell != null && _table.Cols > 1;
+    private bool CanDeleteRow() => SelectedCell != null && _table.Rows > 1 && IsExpressionMode;
+    private bool CanDeleteCol() => SelectedCell != null && _table.Cols > 1 && IsExpressionMode;
+    private bool CanAddRow() => IsExpressionMode;
+    private bool CanAddCol() => IsExpressionMode;
 
     private bool CanSave() => HasUnsavedChanges;
 
@@ -40,8 +46,6 @@ public partial class MainViewModel : ObservableObject
         Rebuild();
     }
 
-    // Викликається автоматично, коли змінилась вибрана клітинка:
-    // її вираз іде в поле вводу
     partial void OnSelectedCellChanged(CellViewModel? oldValue, CellViewModel? newValue)
     {
         if (oldValue != null) oldValue.IsSelected = false;
@@ -49,11 +53,10 @@ public partial class MainViewModel : ObservableObject
         EditorText = newValue?.Exp ?? "";
     }
 
-    // Викликається автоматично, коли змінився режим
     partial void OnIsExpressionModeChanged(bool value)
     {
-        if (!value) RecalculateAll();   // перейшли в ЗНАЧЕННЯ: рахуємо
-        RefreshAll();                   // і перемальовуємо
+        if (!value) RecalculateAll();
+        RefreshAll();
     }
 
     [RelayCommand]
@@ -62,14 +65,14 @@ public partial class MainViewModel : ObservableObject
         if (SelectedCell == null || !IsExpressionMode) return;
 
         string exp = EditorText.Trim();
-        if (exp == SelectedCell.Exp) return;   // нічого не змінилось, не вважаємо це змінами
+        if (exp == SelectedCell.Exp) return;
 
         SelectedCell.Apply(exp);
         SelectedCell.Refresh();
         HasUnsavedChanges = true;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanAddRow))]
     private void AddRow()
     {
         _table.AddRow();
@@ -77,7 +80,7 @@ public partial class MainViewModel : ObservableObject
         HasUnsavedChanges = true;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanAddCol))]
     private void AddCol()
     {
         _table.AddCol();
@@ -105,7 +108,7 @@ public partial class MainViewModel : ObservableObject
 
     private void OnCellSelected(CellViewModel cell) => SelectedCell = cell;
 
-    // Створює екранні об'єкти з даних Table
+    
     private void Rebuild()
     {
         SelectedCell = null;
@@ -155,7 +158,6 @@ public partial class MainViewModel : ObservableObject
     }
     
     [RelayCommand]
-    [Obsolete("Obsolete")]
     private async Task NewTableAsync()
     {
         if (HasUnsavedChanges)
@@ -167,14 +169,13 @@ public partial class MainViewModel : ObservableObject
             if (!proceed) return;
         }
 
-        _table = new Table(DefaultRows, DefaultRows);
+        _table = new Table(DefaultRows, DefaultCols);
         _engine = new FormulaEngine(_table);
         Rebuild();
         HasUnsavedChanges = false;
     }
     
     [RelayCommand(CanExecute = nameof(CanSave))]
-    [Obsolete("Obsolete")]
     private async Task SaveAsync()
     {
         using var stream = new MemoryStream();
@@ -189,7 +190,6 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    [Obsolete("Obsolete")]
     private async Task LoadAsync()
     {
         if (HasUnsavedChanges)
@@ -206,7 +206,7 @@ public partial class MainViewModel : ObservableObject
 
         try
         {
-            using var stream = await file.OpenReadAsync();
+            await using var stream = await file.OpenReadAsync();
             _table = TableFileManager.Load(stream);
             _engine = new FormulaEngine(_table);
             Rebuild();
@@ -219,7 +219,6 @@ public partial class MainViewModel : ObservableObject
     }
     
     [RelayCommand]
-    [Obsolete("Obsolete")]
     private async Task ExitAsync()
     {
         string message = HasUnsavedChanges

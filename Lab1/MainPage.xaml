@@ -14,8 +14,7 @@
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="10" RowSpacing="8">
-
-        <!-- Рядок 0: кнопки та режим -->
+        
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10">
             <HorizontalStackLayout Grid.Column="0" Spacing="10">
                 <Button Text="Видалити рядок" Command="{Binding DeleteRowCommand}" />
@@ -32,8 +31,7 @@
 
             <Button Grid.Column="1" Text="Вийти" Command="{Binding ExitCommand}" />
         </Grid>
-
-        <!-- Рядок 1: поле вводу -->
+        
         <HorizontalStackLayout Grid.Row="1" Spacing="10">
             <Entry Text="{Binding EditorText}"
                    IsEnabled="{Binding IsExpressionMode}"
@@ -43,12 +41,10 @@
                    WidthRequest="400" />
             <Button Text="Застосувати" Command="{Binding CommitCommand}" />
         </HorizontalStackLayout>
-
-        <!-- Рядок 2: таблиця -->
+        
         <ScrollView Grid.Row="2" Orientation="Both">
             <VerticalStackLayout>
-
-                <!-- Заголовки стовпчиків -->
+                
                 <HorizontalStackLayout>
                     <Label WidthRequest="40" />
                     <HorizontalStackLayout BindableLayout.ItemsSource="{Binding ColumnHeaders}">
@@ -60,8 +56,7 @@
                         </BindableLayout.ItemTemplate>
                     </HorizontalStackLayout>
                 </HorizontalStackLayout>
-
-                <!-- Рядки -->
+                
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Rows}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="vm:RowViewModel">

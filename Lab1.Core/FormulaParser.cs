@@ -72,7 +72,7 @@ public static class FormulaParser
     private static int SkipParens(List<Token> tokens, int position)
     {
         if (tokens[position].Type != TokenType.LParen)
-            throw new ParsingException("Очікувалася )", tokens[position].Position);
+            throw new ParsingException("Очікувалася (", tokens[position].Position);
 
         int depth = 1;
         while (position < tokens.Count - 1)
@@ -169,7 +169,7 @@ public static class FormulaParser
 
         while (position < tokens.Count)
         {
-            var token = tokens[position];
+            Token token = tokens[position];
 
             bool isOperandStart = token.Type is TokenType.Num or TokenType.LParen
                                   or TokenType.PlusMinus or TokenType.Func or TokenType.Ref;
@@ -179,21 +179,21 @@ public static class FormulaParser
             if (!expectOperand && isOperandStart)
                 throw new ParsingException($"Очікувався оператор, отримано {token.Value}", token.Position);
 
-            // Бінарний степінь ^ (корінь дерева; перший ^ дає праву асоціативність)
+            // Binary operator ^
             if (token.Type == TokenType.Power && opPriority < 3)
             {
                 topOp = token;
                 topOpPosition = position;
                 opPriority = 3;
             }
-            // Унарний + або - (прив'язується сильніше за ^)
+            // Unary + or - (higher priority then ^)
             else if (token.Type == TokenType.PlusMinus && opPriority < 2)
             {
                 topOp = token;
                 topOpPosition = position;
                 opPriority = 2;
             }
-            // Функції min, max, inc, dec
+            // Functions
             else if (token.Type == TokenType.Func && opPriority < 1)
             {
                 topOp = token;
@@ -202,7 +202,7 @@ public static class FormulaParser
                 if (position + 1 >= tokens.Count || tokens[position + 1].Type != TokenType.LParen)
                     throw new ParsingException($"Очікувалася '(' після функції {token.Value}", token.Position);
             }
-            // Пропуск блоків у дужках
+            // Skip parens
             else if (token.Type == TokenType.LParen)
             {
                 position = SkipParens(tokens, position);

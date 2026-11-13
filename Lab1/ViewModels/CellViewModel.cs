@@ -19,16 +19,12 @@ public partial class CellViewModel(
     
     private string _value = "";
 
-    // Що показувати в клітинці: вираз або порахований результат
     public string Text => isExpressionMode() ? cell.Exp ?? "" : _value;
 
-    // Вираз для поля вводу
     public string Exp => cell.Exp ?? "";
 
-    // Зберегти введений вираз (тут працює синтаксична перевірка)
     public void Apply(string exp) => cell.SetExpression(exp);
 
-    // Порахувати значення й покласти в _value
     public void Recalculate()
     {
         if (cell.Type != CellType.Exp)
@@ -47,10 +43,8 @@ public partial class CellViewModel(
         }
     }
 
-    // Сказати екрану: перечитай Text
     public void Refresh() => OnPropertyChanged(nameof(Text));
 
-    // Команда для дотику по клітинці
     [RelayCommand]
     private void Select() => onSelected(this);
     

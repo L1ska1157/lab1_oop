@@ -6,7 +6,6 @@ namespace Lab1.Core;
 
 public static class TableFileManager
 {
-    // Relaxed-екранування, щоб '+' і кирилиця не перетворювались на \u002B
     private static readonly JsonSerializerOptions Options = new()
     {
         WriteIndented = true,
@@ -15,7 +14,7 @@ public static class TableFileManager
 
     public static void Save(Table table, Stream stream)
     {
-        var data = new string[table.Rows][];
+        string[][] data = new string[table.Rows][];
         for (int r = 1; r <= table.Rows; r++)
         {
             data[r - 1] = new string[table.Cols];
@@ -41,8 +40,8 @@ public static class TableFileManager
 
         var table = new Table(data.Length, cols);
         for (int r = 1; r <= data.Length; r++)
-        for (int c = 1; c <= cols; c++)
-            table.GetCellByRowCol(r, c).SetExpression(data[r - 1][c - 1]);
+            for (int c = 1; c <= cols; c++)
+                table.GetCellByRowCol(r, c).SetExpression(data[r - 1][c - 1]);
         return table;
     }
 }

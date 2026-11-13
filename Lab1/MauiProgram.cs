@@ -3,6 +3,10 @@ using Lab1.ViewModels;
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui;
 
+
+// Variant 17: unary +/-, power, functions inc, dec, min, max
+
+
 namespace Lab1;
 public static class MauiProgram
 {
